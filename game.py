@@ -44,8 +44,8 @@ class Game2048:
             chrome_options.add_experimental_option('useAutomationExtension', False)  # 防止浏览器自动关闭
             self.browser = webdriver.Chrome(options=chrome_options)
             self.browser.get(url=self.game_url)
-            self.browser.set_window_position(0, 0)
-            self.browser.set_window_size(1024, 1024)
+            # self.browser.set_window_position(0, 0)
+            # self.browser.set_window_size(1024, 1024)
         self.htmlElem = self.browser.find_element(By.TAG_NAME, 'html')
         self.actual_score = 0
         self.has_won_flag = False
@@ -125,8 +125,11 @@ class Game2048:
                 
                 # 检查是否是没有获得优惠码的情况
                 if "Oh no! This time it did not work out" in promo_title:
+                    time.sleep(3)
+                    close_modal = self.browser.find_element(By.CLASS_NAME, "uk-modal-close-default")
+                    close_modal.click()
                     self.logger.info("本次未获得优惠码，关闭模态框重新开始")
-                    self.htmlElem.send_keys(Keys.ESCAPE)  # 发送 ESC 键关闭模态框
+                    # self.htmlElem.send_keys(Keys.ESCAPE)  # 发送 ESC 键关闭模态框
                     time.sleep(1)  # 等待模态框关闭
                     return True  # 继续执行
                 
@@ -179,7 +182,9 @@ class Game2048:
                 # 如果折扣是50%，返回False表示应该结束执行
                 if discount == 50:
                     return False
-                self.htmlElem.send_keys(Keys.ESCAPE)  # 发送 ESC 键关闭模态框
+                close_modal = self.browser.find_element(By.CLASS_NAME, "uk-modal-close-default")
+                close_modal.click()
+                # self.htmlElem.send_keys(Keys.ESCAPE)  # 发送 ESC 键关闭模态框
                 return True
         except Exception as e:
             self.logger.error(f"检查优惠码失败", exc_info=True)
@@ -201,10 +206,13 @@ class Game2048:
             except Exception as e:
                 self.logger.error(f"点击重新开始失败，第{retry + 1}次重试", exc_info=True)
                 time.sleep(2)
+                if not self.check_promo_code():
+                    print("检查优惠码弹窗")
         
         self.logger.error(f"重启游戏失败{max_retries}次，尝试重新加载页面")
         try:
-            self.browser.get('https://www.getastr.com/zh/coupon-code')
+            self.browser.close()
+            self.browser.get(url=self.game_url)
             time.sleep(3)
             self.htmlElem = self.browser.find_element(By.TAG_NAME, 'html')
         except Exception as e:
@@ -338,7 +346,7 @@ def setup_logger():
     logger.setLevel(logging.INFO)
     
     # 创建一个文件处理器，文件名包含时间戳
-    timestamp = datetime.now().strftime("%Y%m%d")
+    timestamp = datetime.now().strftime("%Y%m%d%H")
     file_handler = logging.FileHandler(f'game_log_{timestamp}.log', encoding='utf-8')
     file_handler.setLevel(logging.INFO)
     
