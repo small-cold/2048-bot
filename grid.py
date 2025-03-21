@@ -201,6 +201,12 @@ class Grid2048:
         Finds if the game has reached 2048 or higher.
         """
         return 2048 in [2048 for i in range(4) for j in range(4) if self.grid[i][j] >= 2048]
+    
+    def get_max_tile(self):
+        """
+        Finds the maximum tile in the grid.
+        """
+        return max(max(row) for row in self.grid)
 
     @property
     def compute_score(self):

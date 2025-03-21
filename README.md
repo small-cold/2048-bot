@@ -1,6 +1,14 @@
 :robot: 2048-AI
 =======
 
+This Fork: In order to obtain the promotional codes on a certain website.
+
+Env
+
+* Python: 3.13
+
+=======
+
 This project aims to solve the 2048-game with AI. This game was a suitable candidate to start
 solving (video) games with AI. With the [Selenium](https://www.selenium.dev) it's easy to open the web-page
  with the game and dive into the html-code and read the numbers. Selenium can also send the keyboard commands
